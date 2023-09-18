@@ -1,0 +1,69 @@
+databaseChangeLog:
+  - logicalFilePath: liquibase/changelog.yml
+  - changeSet:
+      id: 1
+      author: Naumov
+      changes:
+        - createTable:
+            tableName: bookshelves
+            columns:
+              - column:
+                  name: shelf_id
+                  type: BIGSERIAL
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: shelf_name
+                  type: VARCHAR(255)
+              - column:
+                  name: location
+                  type: VARCHAR(255)
+  - changeSet:
+      id: 2
+      author: Naumov
+      changes:
+        - createTable:
+            tableName: books
+            remarks: Книги
+            columns:
+              - column:
+                  name: book_id
+                  type: BIGSERIAL
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    primaryKeyName: books_pk
+              - column:
+                  name: first_name
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: last_name
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: book_name
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: book_count
+                  type: integer
+                  constraints:
+                    nullable: false
+              - column:
+                  name: shelf_id
+                  type: BIGINT
+  - changeSet:
+      id: 3
+      author: Naumov
+      changes:
+        - addForeignKeyConstraint:
+            baseTableName: books
+            baseColumnNames: shelf_id
+            constraintName: books_shelf_fk
+            referencedTableName: bookshelves
+            referencedColumnNames: shelf_id

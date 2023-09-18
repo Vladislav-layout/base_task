@@ -1,0 +1,24 @@
+spring:
+  datasource:
+    driver-class-name: org.postgresql.Driver
+#    url: @database.url@
+#    username: @database.username@
+#    password: @database.password@
+#    url: jdbc:postgresql://localhost:5432/book_db?ApplicationName=base_task
+#    username: postgres
+#    password: user
+    url: jdbc:postgresql://localhost:5432/${DB_NAME}?ApplicationName=base_task
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+    driverClassName: org.postgresql.Driver
+  jpa:
+    database: POSTGRESQL
+    show-sql: true
+    hibernate:
+      ddl-auto: none
+    properties:
+      dialect: org.hibernate.dialect.PostgreSQL10Dialect
+  liquibase:
+    change-log: classpath:liquibase/changelog.yml
+
+
