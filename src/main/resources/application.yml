@@ -1,12 +1,6 @@
 spring:
   datasource:
     driver-class-name: org.postgresql.Driver
-#    url: @database.url@
-#    username: @database.username@
-#    password: @database.password@
-#    url: jdbc:postgresql://localhost:5432/book_db?ApplicationName=base_task
-#    username: postgres
-#    password: user
     url: jdbc:postgresql://localhost:5432/${DB_NAME}?ApplicationName=base_task
     username: ${DB_USERNAME}
     password: ${DB_PASSWORD}
