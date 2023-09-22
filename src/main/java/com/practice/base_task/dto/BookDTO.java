@@ -6,6 +6,7 @@ import lombok.Data;
 @Data
 public class BookDTO {
 
+    private Long bookId;
     private String firstName;
     private String lastName;
     private String bookName;

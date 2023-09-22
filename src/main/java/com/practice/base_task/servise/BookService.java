@@ -4,6 +4,7 @@ import com.practice.base_task.dto.BookDTO;
 import com.practice.base_task.model.Book;
 import com.practice.base_task.repository.BookRepository;
 import lombok.AllArgsConstructor;
+import org.modelmapper.ModelMapper;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Service;
 
@@ -12,10 +13,9 @@ import java.util.List;
 @Service
 @AllArgsConstructor
 public class BookService {
-
+    private final ModelMapper modelMapper;
     private final BookRepository bookRepository;
     private final ShelvesService shelvesService;
-    private final NamedParameterJdbcTemplate template;
 
 
     public Book findById(Long id) {
@@ -31,33 +31,39 @@ public class BookService {
         return bookRepository.findAllByBookshelf(id);
     }
 
-    public Book saveBook(BookDTO dto){
-        return bookRepository.save(Book.builder()
-                        .firstName(dto.getFirstName())
-                        .lastName(dto.getLastName())
-                        .bookName(dto.getBookName())
-                        .bookCount(dto.getBookCount())
-                        .bookshelf(shelvesService.findShelfById(dto.getShelfId()))
-                        .build());
-    }
-
-//    public void updateBook(Book book){
-//            String sql = "UPDATE books set first_name = :firstName, last_name = :lastName, book_name =:bookName, " +
-//                    "\n book_count = :bookCount where book_id = :id";
-//            SqlParameterSource parameterSource = new MapSqlParameterSource()
-//                    .addValue("id", book.getBookId())
-//                    .addValue("firstName", book.getFirstName())
-//                    .addValue("lastName", book.getLastName())
-//                    .addValue("bookName", book.getBookName())
-//                    .addValue("bookCount", book.getBookCount())
-//                    .addValue("book_shelf", book.getBookshelf());
-//            template.update(sql, parameterSource);
+//    public Book saveBook(BookDTO dto){
+//        return bookRepository.save(Book.builder()
+//                        .firstName(dto.getFirstName())
+//                        .lastName(dto.getLastName())
+//                        .bookName(dto.getBookName())
+//                        .bookCount(dto.getBookCount())
+//                        .bookshelf(shelvesService.findShelfById(dto.getShelfId()))
+//                        .build());
 //    }
-    public Book updateBook(Book book){
-        return bookRepository.save(book);
-    }
+//
+//    public Book updateBook(Book book){
+//        return bookRepository.save(book);
+//    }
 
     public void deleteBook(Long id){
             bookRepository.deleteById(id);
     }
+
+    public BookDTO createOrUpdateBook(BookDTO dto) {
+        Book book = modelMapper.map(dto, Book.class);
+        Book savedBook = bookRepository.save(book);
+        return modelMapper.map(savedBook, BookDTO.class);
+    }
+
+
+    public Book convertBookDtoToEntity(BookDTO bookDTO) {
+        return modelMapper.map(bookDTO, Book.class);
+    }
+
+    public BookDTO convertEntityToBookDto(Book book) {
+        return modelMapper.map(book, BookDTO.class);
+    }
+
+
+
 }

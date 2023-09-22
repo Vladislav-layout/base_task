@@ -20,57 +20,75 @@ public class BookСontroller {
 
 
     private final BookService bookService;
-    private final BookRepository bookRepository;
 
     @Autowired
     public BookСontroller(BookService bookService,
                           BookRepository bookRepository) {
         this.bookService = bookService;
-        this.bookRepository = bookRepository;
     }
 
     @GetMapping("/books")
     @ApiOperation(value = "Список книг")
     public ResponseEntity<List<Book>> findAll () {
-        return mappingResponseListBook(bookService.findAll());
+        List <Book> books = bookService.findAll();
+        if (books.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
+        return new ResponseEntity<>(books, HttpStatus.OK);
     }
 
     @GetMapping("/book/{id}")
     @ApiOperation(value = "Книга")
-    public ResponseEntity<Book> getBook(@PathVariable ("id") Long id)  {
-            return mappingResponseBook(bookService.findById(id));
+    public ResponseEntity<BookDTO> getBookById(@PathVariable ("id") Long id)  {
+            Book book = bookService.findById(id);
+            if (book == null) {
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            }
+
+            BookDTO bookDTO = bookService.convertEntityToBookDto(book);
+            return new ResponseEntity<>(bookDTO, HttpStatus.OK);
     }
 
     @GetMapping("/shelf/{id}")
     @ApiOperation(value = "Список книг в шкафу")
     public ResponseEntity<List<Book>> getBookByShelf(@PathVariable Long id)  {
-        return mappingResponseListBook(bookService.findAllByBookshelfId(id));
+       List <Book> books = bookService.findAllByBookshelfId(id);
+       if (books.isEmpty()) {
+           return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+       }
+       return new ResponseEntity<>(books, HttpStatus.OK);
     }
 
 
-    @PostMapping("/book/save")
-    @ApiOperation(value = "Создать книгу")
-    public ResponseEntity<Book> saveBook(@RequestBody BookDTO dto) {
-        return mappingResponseBook(bookService.saveBook(dto));
-    }
-
-    @PutMapping("/book/update")
-    @ApiOperation(value = "Изменить книгу")
-    public ResponseEntity<Book> updateBook(@RequestBody Book book){
-        return mappingResponseBook(bookService.updateBook(book));
-    }
+//    @PostMapping("/book/save")
+//    @ApiOperation(value = "Создать книгу")
+//    public ResponseEntity<Book> saveBook(@RequestBody BookDTO dto) {
+//        return mappingResponseBook(bookService.saveBook(dto));
+//    }
+//
+//    @PutMapping("/book/update")
+//    @ApiOperation(value = "Изменить книгу")
+//    public ResponseEntity<Book> updateBook(@RequestBody Book book){
+//        return mappingResponseBook(bookService.updateBook(book));
+//    }
 
     @DeleteMapping("/book/{id}")
     @ApiOperation(value = "Удалить книгу")
-    public HttpStatus deleteBook(@PathVariable Long id){
+    public ResponseEntity<Void> deleteBook(@PathVariable Long id){
+            Book existingBook = bookService.findById(id);
+            if (existingBook == null) {
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            }
+
             bookService.deleteBook(id);
-            return HttpStatus.OK;
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
-    private ResponseEntity<Book> mappingResponseBook(Book book) {
-        return new ResponseEntity<>(book, HttpStatus.OK);
+    @PostMapping("/book/createOrUpdate")
+    @ApiOperation(value = "Создать/Изменить книгу")
+    public ResponseEntity<BookDTO> createOrUpdateBook(@RequestBody BookDTO bookDTO) {
+        BookDTO responseDto = bookService.createOrUpdateBook(bookDTO);
+        return new ResponseEntity<>(responseDto, HttpStatus.CREATED);
     }
-    private ResponseEntity<List<Book>> mappingResponseListBook(List<Book> books) {
-        return new ResponseEntity<>(books, HttpStatus.OK);
-    }
+
 }
