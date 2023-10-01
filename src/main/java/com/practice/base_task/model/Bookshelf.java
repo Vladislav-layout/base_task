@@ -1,12 +1,17 @@
 package com.practice.base_task.model;
 
-import lombok.Data;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
-@Data
-@Table(name = "bookshelves")
+@Table(name = "bookshelves", schema = "public")
+@Getter
+@Setter
 public class Bookshelf {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -18,4 +23,7 @@ public class Bookshelf {
 
     @Column(name = "location")
     private String location;
+
+    @OneToMany(mappedBy = "bookshelf")
+    private List<Book> books = new ArrayList<>();
 }

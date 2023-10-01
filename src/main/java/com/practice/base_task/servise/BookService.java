@@ -5,8 +5,8 @@ import com.practice.base_task.model.Book;
 import com.practice.base_task.repository.BookRepository;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
-import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -15,40 +15,24 @@ import java.util.List;
 public class BookService {
     private final ModelMapper modelMapper;
     private final BookRepository bookRepository;
-    private final ShelvesService shelvesService;
 
 
-    public Book findById(Long id) {
-        return bookRepository.findById(id).orElseThrow(() ->
-                new RuntimeException("Book not found - " + id));
+    public Book findByIdWithLeftJoin(Long id) {
+        return bookRepository.findByIdWithLeftJoin(id);
     }
 
-    public List<Book> findAll(){
+    public List<Book> findAll() {
         return bookRepository.findAll();
     }
 
-    public List<Book> findAllByBookshelfId(Long id){
-        return bookRepository.findAllByBookshelf(id);
-    }
-
-//    public Book saveBook(BookDTO dto){
-//        return bookRepository.save(Book.builder()
-//                        .firstName(dto.getFirstName())
-//                        .lastName(dto.getLastName())
-//                        .bookName(dto.getBookName())
-//                        .bookCount(dto.getBookCount())
-//                        .bookshelf(shelvesService.findShelfById(dto.getShelfId()))
-//                        .build());
+//    public List<Book> findAllByBookshelfId(Long id) {
+//        return bookRepository.findAllByBookshelf(id);
 //    }
-//
-//    public Book updateBook(Book book){
-//        return bookRepository.save(book);
-//    }
-
-    public void deleteBook(Long id){
-            bookRepository.deleteById(id);
+    @Transactional
+    public void deleteBook(Long id) {
+        bookRepository.deleteById(id);
     }
-
+    @Transactional
     public BookDTO createOrUpdateBook(BookDTO dto) {
         Book book = modelMapper.map(dto, Book.class);
         Book savedBook = bookRepository.save(book);
@@ -57,13 +41,20 @@ public class BookService {
 
 
     public Book convertBookDtoToEntity(BookDTO bookDTO) {
-        return modelMapper.map(bookDTO, Book.class);
+        Book book =  modelMapper.map(bookDTO, Book.class);
+        if (bookDTO.getBookshelf() == null) {
+            book.setBookshelf(null);
+        }
+        return book;
     }
 
     public BookDTO convertEntityToBookDto(Book book) {
-        return modelMapper.map(book, BookDTO.class);
+        BookDTO bookDTO = modelMapper.map(book, BookDTO.class);
+        if (book.getBookshelf() == null) {
+            bookDTO.setBookshelf(null);
+        }
+        return bookDTO;
     }
-
 
 
 }

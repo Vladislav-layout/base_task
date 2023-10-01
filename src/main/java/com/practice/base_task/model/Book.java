@@ -1,19 +1,14 @@
 package com.practice.base_task.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 
-import javax.persistence.*;
-import java.io.Serializable;
+import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 
 @Entity
-@Data
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
-@Table(name = "books")
+@Table(name = "books", schema = "public")
+@Getter
+@Setter
 public class Book {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -33,6 +28,8 @@ public class Book {
     private int bookCount;
 
     @ManyToOne
-    @JoinColumn(name = "shelf_id", referencedColumnName = "shelf_id")
+    @JoinColumn(name = "shelf_id")
     private Bookshelf bookshelf;
+
+
 }
