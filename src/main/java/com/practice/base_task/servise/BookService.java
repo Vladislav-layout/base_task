@@ -25,9 +25,9 @@ public class BookService {
         return bookRepository.findAll();
     }
 
-//    public List<Book> findAllByBookshelfId(Long id) {
-//        return bookRepository.findAllByBookshelf(id);
-//    }
+    public List<Book> findAllByBookshelfId(Long id) {
+        return bookRepository.findAllByBookshelfId(id);
+    }
     @Transactional
     public void deleteBook(Long id) {
         bookRepository.deleteById(id);
@@ -38,23 +38,4 @@ public class BookService {
         Book savedBook = bookRepository.save(book);
         return modelMapper.map(savedBook, BookDTO.class);
     }
-
-
-    public Book convertBookDtoToEntity(BookDTO bookDTO) {
-        Book book =  modelMapper.map(bookDTO, Book.class);
-        if (bookDTO.getBookshelf() == null) {
-            book.setBookshelf(null);
-        }
-        return book;
-    }
-
-    public BookDTO convertEntityToBookDto(Book book) {
-        BookDTO bookDTO = modelMapper.map(book, BookDTO.class);
-        if (book.getBookshelf() == null) {
-            bookDTO.setBookshelf(null);
-        }
-        return bookDTO;
-    }
-
-
 }

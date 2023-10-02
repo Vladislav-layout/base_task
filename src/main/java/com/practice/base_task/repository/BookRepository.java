@@ -10,8 +10,9 @@ import java.util.List;
 
 @Repository
 public interface BookRepository extends JpaRepository<Book, Long> {
-   // List<Book> findAllByBookshelf(Long id);
-   @Query("SELECT b FROM Book b LEFT JOIN FETCH b.bookshelf WHERE b.bookId = :id")
-   Book findByIdWithLeftJoin(@PathVariable("id") Long id);
+    @Query("SELECT b FROM Book b LEFT JOIN FETCH b.bookshelf WHERE b.bookshelf.id = :shelfId")
+    List<Book> findAllByBookshelfId(@PathVariable("shelfId") Long shelfId);
+    @Query("SELECT b FROM Book b LEFT JOIN FETCH b.bookshelf WHERE b.bookId = :id")
+    Book findByIdWithLeftJoin(@PathVariable("id") Long id);
 
 }

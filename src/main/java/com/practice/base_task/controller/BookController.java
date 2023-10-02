@@ -3,6 +3,7 @@ package com.practice.base_task.controller;
 import com.practice.base_task.dto.BookDTO;
 import com.practice.base_task.model.Book;
 import com.practice.base_task.servise.BookService;
+import com.practice.base_task.utils.BookConverter;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
@@ -21,11 +22,27 @@ import java.util.List;
 public class BookController {
     private final BookService bookService;
     private final ModelMapper modelMapper;
+    private final BookConverter bookConverter;
 
     @GetMapping("books")
     @Operation(summary = "Список книг")
     public ResponseEntity<List<BookDTO>> findAll() {
         List<Book> books = bookService.findAll();
+        if (books == null || books.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
+        List<BookDTO> bookDTOS = new ArrayList<>();
+        for (Book book : books) {
+            bookDTOS.add(modelMapper.map(book,BookDTO.class));
+        }
+
+        return new ResponseEntity<>(bookDTOS, HttpStatus.OK);
+    }
+
+    @GetMapping("/shelf/{id}")
+    @Operation(summary = "Список книг в шкафу")
+    public ResponseEntity<List<BookDTO>> getBookByShelf(@PathVariable Long id) {
+        List<Book> books = bookService.findAllByBookshelfId(id);
         if (books == null || books.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
@@ -52,20 +69,9 @@ public class BookController {
         if (book == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-        BookDTO bookDTO = bookService.convertEntityToBookDto(book);
+        BookDTO bookDTO = bookConverter.convertEntityToBookDto(book);
         return new ResponseEntity<>(bookDTO, HttpStatus.OK);
     }
-
-
-//    @GetMapping("/shelf/{id}")
-//    @Operation(summary = "Список книг в шкафу")
-//    public ResponseEntity<List<Book>> getBookByShelf(@PathVariable Long id) {
-//        List<Book> books = bookService.findAllByBookshelfId(id);
-//        if (books == null || books.isEmpty()) {
-//            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-//        }
-//        return new ResponseEntity<>(books, HttpStatus.OK);
-//    }
 
     @DeleteMapping("book/{id}")
     @Operation(summary = "Удалить книгу")
