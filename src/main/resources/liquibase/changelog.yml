@@ -5,25 +5,6 @@ databaseChangeLog:
       author: Naumov
       changes:
         - createTable:
-            tableName: bookshelves
-            columns:
-              - column:
-                  name: shelf_id
-                  type: BIGSERIAL
-                  autoIncrement: true
-                  constraints:
-                    primaryKey: true
-              - column:
-                  name: shelf_name
-                  type: VARCHAR(255)
-              - column:
-                  name: location
-                  type: VARCHAR(255)
-  - changeSet:
-      id: 2
-      author: Naumov
-      changes:
-        - createTable:
             tableName: books
             remarks: Книги
             columns:
@@ -57,6 +38,26 @@ databaseChangeLog:
               - column:
                   name: shelf_id
                   type: BIGINT
+  - changeSet:
+      id: 2
+      author: Naumov
+      changes:
+        - createTable:
+            tableName: bookshelves
+            columns:
+              - column:
+                  name: shelf_id
+                  type: BIGSERIAL
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: shelf_name
+                  type: VARCHAR(255)
+              - column:
+                  name: location
+                  type: VARCHAR(255)
+
   - changeSet:
       id: 3
       author: Naumov

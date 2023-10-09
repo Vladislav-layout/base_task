@@ -3,7 +3,7 @@ package com.practice.base_task.controller;
 import com.practice.base_task.dto.BookDTO;
 import com.practice.base_task.model.Book;
 import com.practice.base_task.servise.BookService;
-import com.practice.base_task.utils.BookConverter;
+import com.practice.base_task.utils.DataMapper;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
@@ -22,7 +22,7 @@ import java.util.List;
 public class BookController {
     private final BookService bookService;
     private final ModelMapper modelMapper;
-    private final BookConverter bookConverter;
+    private final DataMapper dataMapper;
 
     @GetMapping("books")
     @Operation(summary = "Список книг")
@@ -54,10 +54,17 @@ public class BookController {
         return new ResponseEntity<>(bookDTOS, HttpStatus.OK);
     }
 
-    @PostMapping("book/createOrUpdate")
-    @Operation(summary = "Создать/Изменить книгу")
-    public ResponseEntity<BookDTO> createOrUpdateBook(@RequestBody BookDTO bookDTO) {
-        BookDTO responseDto = bookService.createOrUpdateBook(bookDTO);
+    @PutMapping("book/create")
+    @Operation(summary = "Создать книгу")
+    public ResponseEntity<BookDTO> createBook(@RequestBody BookDTO bookDTO) {
+        BookDTO responseDto = bookService.createBook(bookDTO);
+        return new ResponseEntity<>(responseDto, HttpStatus.CREATED);
+    }
+
+    @PostMapping("book/update")
+    @Operation(summary = "Изменить книгу")
+    public ResponseEntity<BookDTO> UpdateBook(@RequestBody BookDTO bookDTO) {
+        BookDTO responseDto = bookService.updateBook(bookDTO);
         return new ResponseEntity<>(responseDto, HttpStatus.CREATED);
     }
 
@@ -69,7 +76,7 @@ public class BookController {
         if (book == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-        BookDTO bookDTO = bookConverter.convertEntityToBookDto(book);
+        BookDTO bookDTO = dataMapper.convertEntityToBookDto(book);
         return new ResponseEntity<>(bookDTO, HttpStatus.OK);
     }
 

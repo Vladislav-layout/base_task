@@ -33,9 +33,13 @@ public class BookService {
         bookRepository.deleteById(id);
     }
     @Transactional
-    public BookDTO createOrUpdateBook(BookDTO dto) {
-        Book book = modelMapper.map(dto, Book.class);
-        Book savedBook = bookRepository.save(book);
+    public BookDTO createBook(BookDTO dto) {
+        Book savedBook = bookRepository.save(dto);
+        return modelMapper.map(savedBook, BookDTO.class);
+    }
+    @Transactional
+    public BookDTO updateBook(BookDTO dto) {
+        Book savedBook = bookRepository.update(dto);
         return modelMapper.map(savedBook, BookDTO.class);
     }
 }

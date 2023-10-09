@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @AllArgsConstructor
-public class BookConverter {
+public class DataMapper {
 
     private final ModelMapper modelMapper;
 
