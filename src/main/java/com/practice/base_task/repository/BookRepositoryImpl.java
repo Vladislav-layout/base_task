@@ -5,17 +5,15 @@ import com.practice.base_task.model.Book;
 import com.practice.base_task.utils.ResourceReader;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.Query;
 import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import jakarta.persistence.Query;
 import org.modelmapper.ModelMapper;
-import org.modelmapper.TypeToken;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
-import java.util.Map;
 
 @Repository
 @Slf4j
@@ -43,7 +41,7 @@ public class BookRepositoryImpl implements BookRepository {
         long startTime = System.currentTimeMillis();
         List<Book> books = (List<Book>) query.getResultList();
         long endTime = System.currentTimeMillis();
-        log.info('\n' +"По запросу: " + ALL_BOOKS_BY_BOOKSHELF  + " книг найдено: " + books.size(), (double) (endTime - startTime) / 1000);
+        log.info('\n' + "По запросу: " + ALL_BOOKS_BY_BOOKSHELF + " книг найдено: " + books.size(), (double) (endTime - startTime) / 1000);
         return books;
     }
 
@@ -54,7 +52,7 @@ public class BookRepositoryImpl implements BookRepository {
         long startTime = System.currentTimeMillis();
         Book book = (Book) query.getSingleResult();
         long endTime = System.currentTimeMillis();
-        log.info("По запросу: " + BOOK_BY_ID + " c значением параметра: " + id + " найдена книга: " + book.getBookName(),  (double) (endTime - startTime) / 1000);
+        log.info("По запросу: " + BOOK_BY_ID + " c значением параметра: " + id + " найдена книга: " + book.getBookName(), (double) (endTime - startTime) / 1000);
         return book;
     }
 
@@ -64,7 +62,7 @@ public class BookRepositoryImpl implements BookRepository {
         long startTime = System.currentTimeMillis();
         List<Book> books = (List<Book>) query.getResultList();
         long endTime = System.currentTimeMillis();
-        log.info('\n' +"По запросу: " + ALL_BOOKS  + " книг найдено: " + books.size(), (double) (endTime - startTime) / 1000);
+        log.info('\n' + "По запросу: " + ALL_BOOKS + " книг найдено: " + books.size(), (double) (endTime - startTime) / 1000);
         return books;
     }
 
@@ -86,57 +84,24 @@ public class BookRepositoryImpl implements BookRepository {
 
     @Override
     public Book save(BookDTO bookDTO) {
-//        try {
-            // Используйте ModelMapper для маппинга только установленных полей
-//            Map<String, Object> bookParams = modelMapper.map(bookDTO, new TypeToken<Map<String, Object>>() {}.getType());
-//
-//            StringBuilder sql = new StringBuilder(SAVE_BOOK);
-//
-//            for (Map.Entry<String, Object> entry : bookParams.entrySet()) {
-//                if (entry.getValue() == null) {
-//                    // Если значение поля null, то уберите соответствующий параметр из SQL-запроса
-//                    String paramName = entry.getKey();
-//                    String placeholder = ":" + paramName;
-//                    int startIndex = sql.indexOf(placeholder);
-//
-//                    if (startIndex >= 0) {
-//                        sql.delete(startIndex, startIndex + placeholder.length());
-//                    }
-//                }
-//            }
-//
-//            Query query = entityManager.createNativeQuery(sql.toString());
-//
-//            // Установите параметры только для установленных полей
-//            for (Map.Entry<String, Object> entry : bookParams.entrySet()) {
-//                if (entry.getValue() != null) {
-//                    query.setParameter(entry.getKey(), entry.getValue());
-//                }
-//            }
-//
-//            query.executeUpdate();
-//
-//            return modelMapper.map(bookDTO, Book.class);
-//
-//        } catch (Exception e) {
-//            // Обработайте исключение, если что-то пойдет не так
-//            e.printStackTrace(); // Здесь следует использовать более подходящий обработчик ошибок
-//            return null; // Или выбросьте своё исключение в зависимости от ваших потребностей
-//        }
 
-        Query query = entityManager.createNativeQuery(SAVE_BOOK);
-        query.setParameter("firstName", bookDTO.getBookName());
-        query.setParameter("lastName", bookDTO.getLastName());
-        query.setParameter("bookName", bookDTO.getBookName());
-        query.setParameter("bookCount", bookDTO.getBookCount());
-        query.setParameter("shelfId", bookDTO.getBookshelf().getShelfId());
+        Query genId = entityManager.createNativeQuery("SELECT nextval('book_seq') AS generated_id");
+        Long generatedId = (long) genId.getSingleResult();
+        bookDTO.setBookId(generatedId);
+
+        Query queryForBook = entityManager.createNativeQuery(SAVE_BOOK);
+        queryForBook.setParameter("bookId", bookDTO.getBookId());
+        queryForBook.setParameter("firstName", bookDTO.getBookName());
+        queryForBook.setParameter("lastName", bookDTO.getLastName());
+        queryForBook.setParameter("bookName", bookDTO.getBookName());
+        queryForBook.setParameter("bookCount", bookDTO.getBookCount());
+        queryForBook.setParameter("shelfId", bookDTO.getBookshelf().getShelfId());
         long startTime = System.currentTimeMillis();
-        query.executeUpdate();
+        queryForBook.executeUpdate();
         long endTime = System.currentTimeMillis();
 
         return modelMapper.map(bookDTO, Book.class);
     }
-
 
 
     @Override

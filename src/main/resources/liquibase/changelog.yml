@@ -1,7 +1,7 @@
 databaseChangeLog:
   - logicalFilePath: liquibase/changelog.yml
   - changeSet:
-      id: 1
+      id: 2
       author: Naumov
       changes:
         - createTable:
@@ -39,7 +39,7 @@ databaseChangeLog:
                   name: shelf_id
                   type: BIGINT
   - changeSet:
-      id: 2
+      id: 1
       author: Naumov
       changes:
         - createTable:
@@ -68,3 +68,12 @@ databaseChangeLog:
             constraintName: books_shelf_fk
             referencedTableName: bookshelves
             referencedColumnNames: shelf_id
+
+  - changeSet:
+      id: 4
+      author: Naumov
+      changes:
+        - createSequence:
+            sequenceName: book_seq
+            startValue: 1
+            incrementBy: 1
